@@ -134,7 +134,7 @@
       .finger .face.rt { -webkit-transform: rotateY(90deg) translateX(-1em) translateZ(1em); height: 3em;}
       
       .whitekey {
-	background-color: white;
+  background-color: white;
         -webkit-transform-style: preserve-3d;
         transform-style: preserve-3d;
         -webkit-transform: translate3d(6.0em, 19.5em, 0em);
@@ -142,7 +142,7 @@
       }
 
       .whitekey .face2.tp {
-	       -webkit-transform: translate3d(0, -5em, 1em);
+         -webkit-transform: translate3d(0, -5em, 1em);
       }
 
       .whitekey .face.ft {
@@ -173,12 +173,12 @@
   
   <body>
     <div id="app" class="show-hands">
-	
+  
       <button id="showHands">Show Hands</button>
       <button id="hideHands">hide Hands</button>
-	
+  
       <div id="scene">
-      	  //ピアノ描画スクリプト 熊谷
+          //ピアノ描画スクリプト 熊谷
           <script>
             for(i = 0; i < 26; i++){
                 document.write("<div id='whitekey" + i + "' class='whitekey'><div class='face2 tp'></div><div class='face ft'></div></div>");
@@ -218,7 +218,7 @@
           <div class="face ft"></div>
           <div class="face bk"></div>
         </div>
-	<!--<div id="cube" class="cube">
+  <!--<div id="cube" class="cube">
           <div class="face tp"></div>
           <div class="face lt"></div>
           <div class="face rt"></div>
@@ -229,20 +229,20 @@
 </body>
 
     <script>
-	/**************ここから マスターハンド用********/
+  /**************ここから マスターハンド用********/
       var master_leap = new Leap.Controller({}); //for master_leap
-	　　var duration,step;
+    var duration,step;
   
       function simulateGesture(data) {
         var last = data.length-1;
         var i = 0;
          duration = (data[last].timestamp - data[0].timestamp)/300;
          step = duration/data.length;
-		 //print
-		 console.log("duration:"+duration);
-		 console.log("step:"+step);
-		 console.log("data_size:"+data.length);
-		
+     //print
+     console.log("duration:"+duration);
+     console.log("step:"+step);
+     console.log("data_size:"+data.length);
+    
         function run() {//自動ループ
           if (i == last) return;
           var ghost_frame = new Leap.Frame(data[i]);
@@ -250,8 +250,8 @@
           master_leap.processFrame(ghost_frame);//master_leap.onへ遷移
           i++;
           setTimeout(run, step);
-		  //step時間後にrun()を呼び出す
-		  //記録するときの1フレームの長さは可変．しかし，再生するときの1フレームの再生時間は固定になってしまっている．
+      //step時間後にrun()を呼び出す
+      //記録するときの1フレームの長さは可変．しかし，再生するときの1フレームの再生時間は固定になってしまっている．
         };
         run();
       };
@@ -267,7 +267,7 @@
       var fingers = {};
       var spheres = {};
       master_leap.on("frame", function(frame) {
-	  //console.log(frame)
+    //console.log(frame)
         var fingerIds = {}; 
         var handIds = {}; //現在認識している手のIDを格納
         if (frame.hands === undefined ) {
@@ -297,7 +297,7 @@
               moveSphere(sphereDiv, posX, posY, posZ, rotX, rotY, rotZ);
             }
           }
-          handIds[hand.id] = true;　//現在認識している手のIDを格納
+          handIds[hand.id] = true; //現在認識している手のIDを格納
 
         }
         for (handId in spheres) {
@@ -322,8 +322,8 @@
                 fingerDiv.setAttribute('id',pointable.id);
                 fingerDiv.style.backgroundColor='#'+Math.floor(Math.random()*16777215).toString(16);
                 document.getElementById('scene').appendChild(fingerDiv);
-                fingers[pointable.id] = pointable.id; //現在のfingerオブジェクトのidを連想配列で格納　
-												//ex:Object {14: 14, 33: 33, 34: 34, 59: 59, 76: 76}
+                fingers[pointable.id] = pointable.id; //現在のfingerオブジェクトのidを連想配列で格納 
+                        //ex:Object {14: 14, 33: 33, 34: 34, 59: 59, 76: 76}
           } else {//基本的にこちらへ遷移
             var fingerDiv =  document.getElementById(pointable.id);
             if (typeof(fingerDiv) != 'undefined' && fingerDiv != null) {
@@ -332,7 +332,7 @@
           }
           fingerIds[pointable.id] = true;
         }
-		
+    
         for (fingerId in fingers) {//恐らくIDが取得できなくなったものを削除．
           if (!fingerIds[fingerId]) {
             var fingerDiv =  document.getElementById(fingers[fingerId]);
@@ -346,16 +346,16 @@
       d3.json("http://uectf.jp/member/kenji/leapmotion/data_json2.js", function(error, data) {
         simulateGesture(data);
       });
-	  	/**************ここまで マスターハンド用********/
+      /**************ここまで マスターハンド用********/
 
-		
-		
-	/*******ここからユーザーハンド用*********/
-  　　/**関数**/
+    
+    
+  /*******ここからユーザーハンド用*********/
+    /**関数**/
     function move(node, posX, posY, posZ, rotX, rotY, rotZ) {
       var style = node.style;
-	  //print
-	  //console.log(node)
+    //print
+    //console.log(node)
       style.transform =
       style.webkitTransform = 'translate3d(' + posX + 'px, ' + posY + 'px, ' + posZ + 'px) ' +
                               'rotate3d(1, 0, 0, ' + rotX + 'deg) rotate3d(0, 0, 1, ' + rotZ + 'deg)';
@@ -379,15 +379,15 @@
     function randomColor() {
       return '#' + Math.floor(Math.random() * 0x1000000).toString(16);
     }
-　	/**ここまで関数**/
+  /**ここまで関数**/
 
     //グローバル変数
     var app = document.getElementById('app');
     var scene = document.getElementById('scene');
     var sphereTemplate = document.getElementById('sphere');
     var fingerTemplate = document.getElementById('finger');
-    var pool = {};　//for id
-	
+    var pool = {}; //for id
+  
 /* takei added
   input:z軸方向加速度,指のid
   output:
@@ -437,11 +437,11 @@
     }
 
 
-	/****ここからループ***/
+  /****ここからループ***/
     Leap.loop(function(frame) { 
-	//frameを生成していなくてもLeap.loopは使用可能
-	//loop(callback) loopの第一引数にはコールバック関数が格納される．
-	//The most recent {@link Frame} object is passed toyour callback function.
+  //frameを生成していなくてもLeap.loopは使用可能
+  //loop(callback) loopの第一引数にはコールバック関数が格納される．
+  //The most recent {@link Frame} object is passed toyour callback function.
       var ids = {};
       var hands = frame.hands;
       var pointables = frame.pointables;
@@ -480,9 +480,9 @@
 
         ids[pointable.id] = true;
       }
-	  
-	  //poolは現時点の<div　class=finger,hand>オブジェクトをすべて格納している
-	  //出力　Object {11: div#11.cube finger, 15: div#15.cube sphere, 34: div#34.cube finger, 66: div#66.cube finger, 67: div#67.cube finger, 86: div#86.cube finger, 99: div#99.cube sphere}
+    
+    //poolは現時点の<div class=finger,hand>オブジェクトをすべて格納している
+    //出力 Object {11: div#11.cube finger, 15: div#15.cube sphere, 34: div#34.cube finger, 66: div#66.cube finger, 67: div#67.cube finger, 86: div#86.cube finger, 99: div#99.cube sphere}
       for (var id in pool) {//frameオブジェクトにないidがpoolにある場合，そのdivオブジェクトを削除
         if (!ids[id]) {
           scene.removeChild(pool[id]);
@@ -497,9 +497,9 @@
         app.className = '';
       }, false);
     });
-	/***ここまでループ***/
-	/*******ここまでユーザーハンド用*********/
-		
+  /***ここまでループ***/
+  /*******ここまでユーザーハンド用*********/
+    
     </script>
 
 </html>
