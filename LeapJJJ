@@ -116,6 +116,32 @@
       <button id="hideHands">hide Hands</button>
 	
       <div id="scene">
+      	  //ピアノ描画スクリプト 熊谷
+          <script>
+            for(i = 0; i < 26; i++){
+                document.write("<div id='whitekey" + i + "' class='whitekey'><div class='face2 tp'></div><div class='face ft'></div></div>");
+                var number = document.getElementById("whitekey" + i);
+
+                var keyX = 1.0 * i + 6.0;
+
+                var keyStyle = number.style;
+                keyStyle.transform =
+                keyStyle.webkitTransform = 'translate3d(' + keyX + 'em, 22.0em, 0em)';
+            }
+            
+            for(i = 0; i < 25; i++){
+                document.write("<div id='blackkey" + i + "' class='blackkey'><div class='face3 tp'></div><div class='face ft'></div></div>");
+                var number = document.getElementById("blackkey" + i);
+
+                var keyX = 1.0 * i + 6.5;
+
+                var keyStyle = number.style;
+                keyStyle.transform =
+                keyStyle.webkitTransform = 'translate3d(' + keyX + 'em, 18.5em, 1em)';
+            }
+
+          </script>
+      
         <div id="finger" class="cube finger">
           <div class="face tp"></div>
           <div class="face lt"></div>
@@ -130,13 +156,13 @@
           <div class="face ft"></div>
           <div class="face bk"></div>
         </div>
-		<div id="cube" class="cube">
+	<!--<div id="cube" class="cube">
           <div class="face tp"></div>
           <div class="face lt"></div>
           <div class="face rt"></div>
           <div class="face ft"></div>
           <div class="face bk"></div>
-        </div>
+        </div>-->
     </div>
 </body>
 
