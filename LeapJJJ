@@ -300,7 +300,55 @@
     var fingerTemplate = document.getElementById('finger');
     var pool = {};　//for id
 	
-	
+/* takei added
+  input:z軸方向加速度,指のid
+  output:
+    0:何もない状態
+    1:tap
+    2:up
+
+  ｚ軸方向の負の加速度（下向き）がある一定の値(ACC)以上で移動したときtapしたとする。逆の時up。
+  tapping_listはidをキーとし、1ならば押している状態、0ならば押していない状態を指す。個別の状態を見たい時はこれを参照すべし。
+  tapping_countはidをキーとし、tap状態の回数を記録する。tapの回数が一定の数（CT）を超えた時、tapしたとする。up_countはその逆。
+
+  現状の問題点：
+  押しているという状態をこちらで保持していると、指が消えた時でもその指は押したままの状態が残ってしまったりする。鍵盤の方でこの情報は保持してほしい。
+  単純に重い。指をおもいっきり動かすとちょっとまずいかも？
+  jsで処理するのではなく、jsに渡す前に処理させたほうがいい感じもする。
+*/
+
+    var tapping_list = new Array(10);
+    var tapping_count = new Array(10);
+    var up_count = new Array(10);
+
+    var ACC = 100;
+    var CT = 6;
+
+    function tap(accZ,id){
+      if(accZ < 0 && Math.abs(accZ) > ACC){
+        tapping_count[id]++;
+        if(tapping_count[id]>CT){
+          tapping_list[id]=1;
+          tapping_count[id]=0;
+          console.log("tap:"+id+","+tapping_list[id]);
+        }
+        return 1;
+      }else if(accZ > ACC){
+        up_count[id]++;
+        if(up_count[id]>CT){
+          tapping_list[id] = 0;
+          up_count[id]=0;
+          console.log("up:"+id+","+tapping_list[id]);
+        }
+          return 2;
+        }else{
+          tapping_count[id] = 0;
+          up_count[id] = 0;
+          return 0;
+        }
+    }
+
+
 	/****ここからループ***/
     Leap.loop(function(frame) { 
 	//frameを生成していなくてもLeap.loopは使用可能
@@ -336,6 +384,11 @@
         node = getNode(pointable.id, fingerTemplate);//特定のidのdivオブジェクト(node)を取得
 
         move(node, posX, posY, posZ, dirX, dirY, dirZ);//定のidのdivオブジェクト(node)をcssにより移動，描画
+
+        //takei added
+        acc = pointable.tipVelocity[1];
+        tap(acc,pointable.id);
+        //takei added
 
         ids[pointable.id] = true;
       }
