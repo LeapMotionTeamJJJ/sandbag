@@ -231,12 +231,12 @@
     <script>
   /**************ここから マスターハンド用********/
       var master_leap = new Leap.Controller({}); //for master_leap
-    var duration,step;
+	  var duration,step;
   
       function simulateGesture(data) {
         var last = data.length-1;
         var i = 0;
-         duration = (data[last].timestamp - data[0].timestamp)/300;
+         duration = (data[last].timestamp - data[0].timestamp)/1000; //モーション移動速度の変更はここ
          step = duration/data.length;
      //print
      console.log("duration:"+duration);
@@ -278,26 +278,27 @@
 
         for (var handId = 0, handCount = handsLength; handId != handCount; handId++) {
           var hand = frame.hands[handId];
+		  var m_hand_id = 'm'+hand.id; //IDにマスターハンドを示すmを付加
           var posX = (hand.palmPosition[0]*3);
           var posY = (hand.palmPosition[2]*3)-200;
           var posZ = (hand.palmPosition[1]*3)-400;
           var rotX = (hand._rotation[2]*90);
           var rotY = (hand._rotation[1]*90);
           var rotZ = (hand._rotation[0]*90);
-          var sphere = spheres[hand.id];
+          var sphere = spheres[m_hand_id];
           if (!sphere) {
             var sphereDiv = document.getElementById("sphere").cloneNode(true);
-                sphereDiv.setAttribute('id',hand.id);
+                sphereDiv.setAttribute('id',m_hand_id);
                 sphereDiv.style.backgroundColor='#'+Math.floor(Math.random()*16777215).toString(16);
                 document.getElementById('scene').appendChild(sphereDiv);
-                spheres[hand.id] = hand.id;
+                spheres[m_hand_id] = m_hand_id;
           } else {
-            var sphereDiv =  document.getElementById(hand.id);
+            var sphereDiv =  document.getElementById(m_hand_id);
             if (typeof(sphereDiv) != 'undefined' && sphereDiv != null) {
               moveSphere(sphereDiv, posX, posY, posZ, rotX, rotY, rotZ);
             }
           }
-          handIds[hand.id] = true; //現在認識している手のIDを格納
+          handIds[m_hand_id] = true; //現在認識している手のIDを格納
 
         }
         for (handId in spheres) {
@@ -310,27 +311,28 @@
 
         for (var pointableId = 0, pointableCount = frame.pointables.length; pointableId != pointableCount; pointableId++) {
           var pointable = frame.pointables[pointableId];
+		  var m_pointable_id = 'm'+pointable.id //IDにマスターハンドを示すmを付加
           var posX = (pointable.tipPosition[0]*3);
           var posY = (pointable.tipPosition[2]*3)-200;
           var posZ = (pointable.tipPosition[1]*3)-400;
           var dirX = -(pointable.direction[1]*90);
           var dirY = -(pointable.direction[2]*90);
           var dirZ = (pointable.direction[0]*90);
-          var finger = fingers[pointable.id];
+          var finger = fingers[m_pointable_id];
           if (!finger) {//何のためにあるのか・・・？
             var fingerDiv = document.getElementById("finger").cloneNode(true);
-                fingerDiv.setAttribute('id',pointable.id);
+                fingerDiv.setAttribute('id',m_pointable_id);
                 fingerDiv.style.backgroundColor='#'+Math.floor(Math.random()*16777215).toString(16);
                 document.getElementById('scene').appendChild(fingerDiv);
-                fingers[pointable.id] = pointable.id; //現在のfingerオブジェクトのidを連想配列で格納 
+                fingers[m_pointable_id] = m_pointable_id; //現在のfingerオブジェクトのidを連想配列で格納 
                         //ex:Object {14: 14, 33: 33, 34: 34, 59: 59, 76: 76}
           } else {//基本的にこちらへ遷移
-            var fingerDiv =  document.getElementById(pointable.id);
+            var fingerDiv =  document.getElementById(m_pointable_id);
             if (typeof(fingerDiv) != 'undefined' && fingerDiv != null) {
               moveFinger(fingerDiv, posX, posY, posZ, dirX, dirY, dirZ);
             }
           }
-          fingerIds[pointable.id] = true;
+          fingerIds[m_pointable_id] = true;
         }
     
         for (fingerId in fingers) {//恐らくIDが取得できなくなったものを削除．
@@ -447,6 +449,7 @@
       var pointables = frame.pointables;
 
       for (var i = 0, hand; hand = hands[i++];) {
+		var u_hand_id = 'u' + hand.id;
         var posX = (hand.palmPosition[0] * 3);
         var posY = (hand.palmPosition[2] * 3) - 200;
         var posZ = (hand.palmPosition[1] * 3) - 400;
@@ -454,14 +457,15 @@
         var rotY = (hand._rotation[1] * 90);
         var rotZ = (hand._rotation[0] * 90);
 
-        var node = getNode(hand.id, sphereTemplate); //今現在の<div class= hand or finger>オブジェクト1つを拾ってくる
+        var node = getNode(u_hand_id, sphereTemplate); //今現在の<div class= hand or finger>オブジェクト1つを拾ってくる
 
         move(node, posX, posY, posZ, rotX, rotY, rotZ);
 
-        ids[hand.id] = true;
+        ids[u_hand_id] = true;
       }
 
       for (var i = 0, pointable; pointable = pointables[i++];) {
+		var u_pointable_id ='u'+pointable.id;
         var posX = (pointable.tipPosition[0] * 3);
         var posY = (pointable.tipPosition[2] * 3) - 200;
         var posZ = (pointable.tipPosition[1] * 3) - 400;
@@ -469,16 +473,16 @@
         var dirY = -(pointable.direction[2] * 90);
         var dirZ = (pointable.direction[0] * 90);
 
-        node = getNode(pointable.id, fingerTemplate);//特定のidのdivオブジェクト(node)を取得
+        node = getNode(u_pointable_id ,fingerTemplate);//特定のidのdivオブジェクト(node)を取得
 
         move(node, posX, posY, posZ, dirX, dirY, dirZ);//定のidのdivオブジェクト(node)をcssにより移動，描画
 
         //takei added
         acc = pointable.tipVelocity[1];
-        tap(acc,pointable.id);
+        tap(acc,u_pointable_id);
         //takei added
 
-        ids[pointable.id] = true;
+        ids[u_pointable_id] = true;
       }
     
     //poolは現時点の<div class=finger,hand>オブジェクトをすべて格納している
