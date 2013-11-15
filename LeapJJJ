@@ -97,7 +97,7 @@
       
       .face2 {
         position: absolute;
-        width: 1em;
+        width: 1.5em;
         height: 6em;
         background-color: inherit;
         -webkit-transform-style: preserve-3d;
@@ -109,6 +109,32 @@
       }
 
       .face3 {
+        position: absolute;
+        width: 1.5em;
+        height: 1em;
+        background-color: inherit;
+        -webkit-transform-style: preserve-3d;
+        transform-style: preserve-3d;
+        -webkit-transform-origin: 0 0;
+        transform-origin: 0 0;
+        -webkit-box-shadow: inset 0 0 0 1px rgba(255,255,255,.9);
+        box-shadow: inset 0 0 0 1px rgba(255,255,255,.9);
+      }
+
+      .face4 {
+        position: absolute;
+        width: 1em;
+        height: 3em;
+        background-color: inherit;
+        -webkit-transform-style: preserve-3d;
+        transform-style: preserve-3d;
+        -webkit-transform-origin: 0 0;
+        transform-origin: 0 0;
+        -webkit-box-shadow: inset 0 0 0 1px rgba(255,255,255,.9);
+        box-shadow: inset 0 0 0 1px rgba(255,255,255,.9);
+      }
+
+      .face5 {
         position: absolute;
         width: 1em;
         height: 3em;
@@ -134,7 +160,7 @@
       .finger .face.rt { -webkit-transform: rotateY(90deg) translateX(-1em) translateZ(1em); height: 3em;}
       
       .whitekey {
-  background-color: white;
+  	background-color: white;
         -webkit-transform-style: preserve-3d;
         transform-style: preserve-3d;
         -webkit-transform: translate3d(6.0em, 19.5em, 0em);
@@ -143,6 +169,11 @@
 
       .whitekey .face2.tp {
          -webkit-transform: translate3d(0, -5em, 1em);
+      }
+      
+      .whitekey .face3.ft {
+        -webkit-transform: rotate3d(1, 0, 0, 90deg) translate3d(0, 0, -1em);
+        transform: rotate3d(1, 0, 0, 90deg) translate3d(0, 0, -1em);
       }
 
       .whitekey .face.ft {
@@ -159,6 +190,10 @@
       }
 
       .blackkey .face3.tp {
+         -webkit-transform: translate3d(0, -2em, 1em);
+      }
+      
+      .blackkey .face4.tp {
          -webkit-transform: translate3d(0, -2em, 1em);
       }
 
@@ -180,27 +215,29 @@
       <div id="scene">
           //ピアノ描画スクリプト 熊谷
           <script>
-            for(i = 0; i < 26; i++){
-                document.write("<div id='whitekey" + i + "' class='whitekey'><div class='face2 tp'></div><div class='face ft'></div></div>");
+            for(i = 0; i < 22 ; i++){
+                document.write("<div id='whitekey" + i + "' class='whitekey'><div class='face2 tp'></div><div class='face3 ft'></div></div>");
                 var number = document.getElementById("whitekey" + i);
 
-                var keyX = 1.0 * i + 6.0;
+                var keyX = 1.5 * i + 3.5;
 
                 var keyStyle = number.style;
                 keyStyle.transform =
-                keyStyle.webkitTransform = 'translate3d(' + keyX + 'em, 22.0em, 0em)';
-            }
-            
-            for(i = 0; i < 25; i++){
-                document.write("<div id='blackkey" + i + "' class='blackkey'><div class='face3 tp'></div><div class='face ft'></div></div>");
-                var number = document.getElementById("blackkey" + i);
+                keyStyle.webkitTransform = 'translate3d(' + keyX + 'em, 17.0em, 0em)';
 
-                var keyX = 1.0 * i + 6.5;
+                if(i == 2 || i == 6 || i == 9 || i == 13 || i == 16 || i == 20 || i == 21){
+                  continue;
+                }else{
+                  document.write("<div id='blackkey" + i + "' class='blackkey'><div class='face4 tp'></div><div class='face ft'></div></div>");
+                  var number = document.getElementById("blackkey" + i);
 
-                var keyStyle = number.style;
-                keyStyle.transform =
-                keyStyle.webkitTransform = 'translate3d(' + keyX + 'em, 18.5em, 1em)';
-            }
+                  var keyX = 1.5 * i + 4.5;
+
+                  var keyStyle = number.style;
+                  keyStyle.transform =
+                  keyStyle.webkitTransform = 'translate3d(' + keyX + 'em, 13.5em, 1em)';
+                }
+              }
 
           </script>
       
