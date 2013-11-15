@@ -47,7 +47,7 @@
         -webkit-transform: rotateX(75deg);
       }
       #scene {
-        -webkit-transform: rotateX(75deg);
+        -webkit-transform: rotateX(45deg);
       }
       #scene:before {
         content: '';
