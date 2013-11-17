@@ -584,7 +584,7 @@
     function init(){
       
       em = scene.clientWidth/40;
-      piano_start_X = (-1)*16.5*em - 0.25em;
+      piano_start_X = (-1)*16.5*em - 0.25*em;
       piano_start_Y = 17 * em;
       piano_key_Xlength = 1.5*em;
       piano_key_Ylength = 6*em;
