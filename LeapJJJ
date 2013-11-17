@@ -630,7 +630,7 @@
       em = scene.clientWidth/40;
       piano_start_X = (-1)*20.25*em;
       piano_start_Y = (-1)*5 * em;
-      piano_key_Xlength = 1.5*em;
+      piano_key_Xlength = 1.5*em*1.25;
       piano_key_Ylength = 3*em;
       piano_key_nums = 22;
       audio_load();
