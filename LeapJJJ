@@ -209,7 +209,7 @@
   <style>[touch-action="none"]{ -ms-touch-action: none; touch-action: none; }[touch-action="pan-x"]{ -ms-touch-action: pan-x; touch-action: pan-x; }[touch-action="pan-y"]{ -ms-touch-action: pan-y; touch-action: pan-y; }[touch-action="scroll"],[touch-action="pan-x pan-y"],[touch-action="pan-y pan-x"]{ -ms-touch-action: pan-x pan-y; touch-action: pan-x pan-y; }</style></head>
   
   
-  <body onload="audio_load()">
+  <body onload="init()">
     <div id="app" class="show-hands">
   
       <button id="showHands">Show Hands</button>
@@ -471,7 +471,7 @@
 
     var tapping_list = new Array(10);
     var tapping_count = new Array(10);
-    var border=0; //tapの基準の高さ
+    var border=170/3; //tapの基準の高さ
     var border_range=15; //基準の高さからの範囲
     var up_count = new Array(10);
 
@@ -487,7 +487,7 @@
           console.log("tap:"+id+","+tapping_list[id]);
         }
         return 1;
-      }else if(accZ > ACC || Math.abs(posZ)<border+border_range){
+      }else if(accZ > ACC && Math.abs(posZ)<border+border_range){
         up_count[id]++;
         if(up_count[id]>CT){
           tapping_list[id] = 0;
@@ -504,13 +504,14 @@
 
     /* piano関連の変数 */
     //開始位置、長さなどは鍵盤の大きさで調整
-    var piano_key_nums=7; //pianoの鍵盤の数
+    var piano_key_nums; //pianoの鍵盤の数
     var piano=Array(piano_key_nums);  //pianoの状態を保持。0.何もない状態 1.再生中 2.再生終了
     var piano_key_Xlength=50;  //鍵盤の一つの横の長さ
     var piano_key_Ylength=100; //鍵盤一つの縦の長さ
     var piano_start_X=-250; //ピアノの開始位置x
     var piano_start_Y=-50; //ピアノの開始位置y 
     var piano_audio=Array(piano_key_nums);//音源の読み込み
+    var em=1;
 
     //最初に音源をすべて読み込ませる
     function audio_load(){
@@ -526,9 +527,44 @@
     }
     //音を止める。再生時間を最初に戻す
     function stop_piano(num){
+      console.log('ended:'+num);
       piano_audio[num].pause();
       piano_audio[num].currentTime = 0;
       piano[num]=0;
+    }
+
+
+    function init(){
+      
+      em = scene.clientWidth/40;
+      piano_start_X = (-1)*16.5*em;
+      piano_start_Y = 17 * em;
+      piano_key_Xlength = 1.5*em;
+      piano_key_Ylength = 6*em;
+      piano_key_nums = 7;
+      audio_load();
+
+          //takei added
+      //音が鳴り終わったら止める
+      var i;
+      for(i=1;i<piano_key_nums;i++){
+        piano_audio[i].addEventListener("ended",function(){
+          console.log("num:"+i);
+          piano[i]=2;
+          keys=document.getElementById('whitekey' + i);
+          keys.style.backgroundColor="#ffffff";
+          stop_piano(i);
+        },false);
+      }
+      piano_audio[0].addEventListener("ended",function(){
+          console.log("num:"+0);
+          piano[0]=2;
+          keys=document.getElementById('whitekey' + 0);
+          keys.style.backgroundColor="#ffffff";
+          stop_piano(0);
+        },false);
+
+      //takei added
     }
 
 
@@ -585,22 +621,21 @@
           play_piano(num);
           console.log("posX:" + posX + " posY:" + posY + " posZ:"+posZ+" piano_num:"+num+"acc:"+acc);
           //鍵盤の色を変えるなどの処理をここに
-          
+          keys=document.getElementById('whitekey' + num);
+          keys.style.backgroundColor="#ff0000";
+
+        }if(tap_flg==2){
+          piano[i]=2;
+          keys=document.getElementById('whitekey' + num);
+          keys.style.backgroundColor="#ffffff";
+          stop_piano(i);
         }
         
         //takei added
 
         ids[u_pointable_id] = true;
       }
-    //takei added
-      //音が鳴り終わったら止める
-      for(var i=0;i<piano_key_nums;i++){
-        piano_audio[i].addEventListener("ended",function(){
-          piano[i]=2;
-          stop_piano(i);
-        },false);
-      }
-      //takei added
+ 
     //poolは現時点の<div class=finger,hand>オブジェクトをすべて格納している
     //出力 Object {11: div#11.cube finger, 15: div#15.cube sphere, 34: div#34.cube finger, 66: div#66.cube finger, 67: div#67.cube finger, 86: div#86.cube finger, 99: div#99.cube sphere}
       for (var id in pool) {//frameオブジェクトにないidがpoolにある場合，そのdivオブジェクトを削除
