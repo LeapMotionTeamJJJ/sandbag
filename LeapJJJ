@@ -160,7 +160,7 @@
       .finger .face.rt { -webkit-transform: rotateY(90deg) translateX(-1em) translateZ(1em); height: 3em;}
       
       .whitekey {
-  	background-color: white;
+    background-color: white;
         -webkit-transform-style: preserve-3d;
         transform-style: preserve-3d;
         -webkit-transform: translate3d(6.0em, 19.5em, 0em);
@@ -202,6 +202,9 @@
         transform: rotate3d(1, 0, 0, 90deg) translate3d(0, 0, -1em);
       }
 
+
+      /*****ここからレコード用CSS****/
+      /*****ここまでレコード用CSS****/
     </style>
   <style>[touch-action="none"]{ -ms-touch-action: none; touch-action: none; }[touch-action="pan-x"]{ -ms-touch-action: pan-x; touch-action: pan-x; }[touch-action="pan-y"]{ -ms-touch-action: pan-y; touch-action: pan-y; }[touch-action="scroll"],[touch-action="pan-x pan-y"],[touch-action="pan-y pan-x"]{ -ms-touch-action: pan-x pan-y; touch-action: pan-x pan-y; }</style></head>
   
@@ -211,7 +214,16 @@
   
       <button id="showHands">Show Hands</button>
       <button id="hideHands">hide Hands</button>
-  
+      <button id="slow">slow(未)</button>
+
+      <!--ここからレコード用-->
+      <div id="main" style="visibility: visible;">
+          <input type="button" value="record gesture" onclick="record()" id="recorder"><strong id="samplesize">0</strong> samples recorded
+      <div id="output" style="font-size: 1px"></div>
+      </div>
+      <!--ここまでレコード用-->
+
+
       <div id="scene">
           //ピアノ描画スクリプト 熊谷
           <script>
@@ -240,35 +252,49 @@
               }
 
           </script>
-      
-        <div id="finger" class="cube finger">
+        
+        <!--マスターハンド用オリジナルタグ-->
+        <div id="m_finger" class="cube finger m_finger">
           <div class="face tp"></div>
           <div class="face lt"></div>
           <div class="face rt"></div>
           <div class="face ft"></div>
           <div class="face bk"></div>
         </div>
-        <div id="sphere" class="cube sphere">
+        <div id="m_sphere" class="cube sphere m_sphere">
+          <div class="face tp"></div>
+          <div class="face lt"></div>
+          <div class="face rt"></div>
+          <div class="face ft"></div>
+          <div class="face bk"></div>
+        </div> 
+
+        <!--ユーザーハンド用オリジナルタグ-->
+        <div id="u_finger" class="cube finger u_finger">
           <div class="face tp"></div>
           <div class="face lt"></div>
           <div class="face rt"></div>
           <div class="face ft"></div>
           <div class="face bk"></div>
         </div>
-  <!--<div id="cube" class="cube">
+        <div id="u_sphere" class="cube sphere u_sphere">
           <div class="face tp"></div>
           <div class="face lt"></div>
           <div class="face rt"></div>
           <div class="face ft"></div>
           <div class="face bk"></div>
-        </div>-->
+        </div>
+
     </div>
 </body>
+
+
+
 
     <script>
   /**************ここから マスターハンド用********/
       var master_leap = new Leap.Controller({}); //for master_leap
-	  var duration,step;
+    var duration,step;
   
       function simulateGesture(data) {
         var last = data.length-1;
@@ -315,7 +341,7 @@
 
         for (var handId = 0, handCount = handsLength; handId != handCount; handId++) {
           var hand = frame.hands[handId];
-		  var m_hand_id = 'm'+hand.id; //IDにマスターハンドを示すmを付加
+      var m_hand_id = 'm'+hand.id; //IDにマスターハンドを示すmを付加
           var posX = (hand.palmPosition[0]*3);
           var posY = (hand.palmPosition[2]*3)-200;
           var posZ = (hand.palmPosition[1]*3)-400;
@@ -324,7 +350,7 @@
           var rotZ = (hand._rotation[0]*90);
           var sphere = spheres[m_hand_id];
           if (!sphere) {
-            var sphereDiv = document.getElementById("sphere").cloneNode(true);
+            var sphereDiv = document.getElementById("m_sphere").cloneNode(true);
                 sphereDiv.setAttribute('id',m_hand_id);
                 sphereDiv.style.backgroundColor='#'+Math.floor(Math.random()*16777215).toString(16);
                 document.getElementById('scene').appendChild(sphereDiv);
@@ -348,7 +374,7 @@
 
         for (var pointableId = 0, pointableCount = frame.pointables.length; pointableId != pointableCount; pointableId++) {
           var pointable = frame.pointables[pointableId];
-		  var m_pointable_id = 'm'+pointable.id //IDにマスターハンドを示すmを付加
+      var m_pointable_id = 'm'+pointable.id //IDにマスターハンドを示すmを付加
           var posX = (pointable.tipPosition[0]*3);
           var posY = (pointable.tipPosition[2]*3)-200;
           var posZ = (pointable.tipPosition[1]*3)-400;
@@ -357,7 +383,7 @@
           var dirZ = (pointable.direction[0]*90);
           var finger = fingers[m_pointable_id];
           if (!finger) {//何のためにあるのか・・・？
-            var fingerDiv = document.getElementById("finger").cloneNode(true);
+            var fingerDiv = document.getElementById("m_finger").cloneNode(true);
                 fingerDiv.setAttribute('id',m_pointable_id);
                 fingerDiv.style.backgroundColor='#'+Math.floor(Math.random()*16777215).toString(16);
                 document.getElementById('scene').appendChild(fingerDiv);
@@ -423,8 +449,8 @@
     //グローバル変数
     var app = document.getElementById('app');
     var scene = document.getElementById('scene');
-    var sphereTemplate = document.getElementById('sphere');
-    var fingerTemplate = document.getElementById('finger');
+    var sphereTemplate = document.getElementById('u_sphere');
+    var fingerTemplate = document.getElementById('u_finger');
     var pool = {}; //for id
   
 /* takei added
@@ -516,7 +542,7 @@
       var pointables = frame.pointables;
 
       for (var i = 0, hand; hand = hands[i++];) {
-		var u_hand_id = 'u' + hand.id;
+    var u_hand_id = 'u' + hand.id;
         var posX = (hand.palmPosition[0] * 3);
         var posY = (hand.palmPosition[2] * 3) - 200;
         var posZ = (hand.palmPosition[1] * 3) - 400;
@@ -532,7 +558,7 @@
       }
 
       for (var i = 0, pointable; pointable = pointables[i++];) {
-		var u_pointable_id ='u'+pointable.id;
+    var u_pointable_id ='u'+pointable.id;
         var posX = (pointable.tipPosition[0] * 3);
         var posY = (pointable.tipPosition[2] * 3) - 200;
         var posZ = (pointable.tipPosition[1] * 3) - 400;
@@ -593,7 +619,76 @@
     });
   /***ここまでループ***/
   /*******ここまでユーザーハンド用*********/
-    
     </script>
+
+  <script>
+  /***********ここからレコード用(サンプルそのまま)************/
+var record = function() {},
+    recording = false,
+    recorded = [],
+    ws;
+
+//Create and open the socket
+if ((typeof(WebSocket) == 'undefined') &&
+    (typeof(MozWebSocket) != 'undefined')) {
+  WebSocket = MozWebSocket;
+}
+ws = new WebSocket("ws://localhost:6437/");
+
+// On successful connection
+ws.onopen = function(event) {
+  document.getElementById("main").style.visibility = "visible";
+  document.getElementById("connection").innerHTML = "<span class='good'>WebSocket connection open!</span>";
+};
+
+// On message received
+ws.onmessage = function(event) {
+  var obj = JSON.parse(event.data);
+  if (recording) { 
+    recorded.push(obj);
+    document.getElementById("samplesize").innerHTML = recorded.length;
+  };
+};
+
+// On socket close
+ws.onclose = function(event) {
+  ws = null;
+  document.getElementById("main").style.visibility = "hidden";
+  document.getElementById("connection").innerHTML = "<span class='bad'>WebSocket connection closed</span>";
+}
+
+//On socket error
+ws.onerror = function(event) {
+  alert("Received error");
+};
+
+var record_button = document.getElementById("recorder");
+
+// On record press
+record = function() {
+  // toggle recording
+  recording = !recording;
+
+  if (recording) {
+    record_button.value =  "finish recording";
+  } else {
+    record_button.value =  "record gesture";
+    // print out results if finished recording
+    var html = "<pre>[\n";
+    recorded.forEach(function(obj) {
+      html += JSON.stringify(obj, undefined, 0);
+      html += ",\n";
+    });
+    html = html.slice(0,html.length-2);
+    html += "\n]</pre>";
+    document.getElementById("output").innerHTML = html;
+  }
+  
+  // reset recorded data
+  recorded = [];
+}; 
+
+/***********ここまでレコード用**************/
+</script>
 
 </html>
