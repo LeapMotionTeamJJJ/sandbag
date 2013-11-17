@@ -44,14 +44,15 @@
         background-size: 5em 5em, 5em 5em, 1em 1em, 1em 1em;
         background-position: -.1em -.1em, -.1em -.1em, -.05em -.05em, -.05em -.05em;
         -webkit-transform-style: preserve-3d;
-        -webkit-transform: rotateX(75deg);
       }
-      #scene {
-        -webkit-transform: rotateX(20deg);
-      }
+
       #scene:before {
         content: '';
         -webkit-transform: rotateX(90deg) translateZ(19.5em) translateY(20em);
+      }
+
+      #scene {
+        -webkit-transform: rotateX(20deg);
       }
       .cube {
         background-color: red;
@@ -290,7 +291,7 @@
       </div>
 
       <div id="scene">
-          //ピアノ描画スクリプト 熊谷
+          <!-- ピアノ描画スクリプト 熊谷 -->
           <script>
             for(i = 0; i < 22 ; i++){
                 document.write("<div id='whitekey" + i + "' class='whitekey'><div class='face2 tp'></div><div class='face3 ft'></div></div>");
