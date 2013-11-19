@@ -522,7 +522,7 @@
           }
 
  //takei added
-        acc_m = pointable.tipVelocity[1];
+        acc = pointable.tipVelocity[1];
 
         //numは鍵盤の番号・黒鍵の時だけ位置を少しだけずらす
         num_y = Math.floor((posY-piano_start_Y)/piano_key_Ylength);
