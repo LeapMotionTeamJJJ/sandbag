@@ -539,18 +539,21 @@
         }else if(num_y==0){
           keys=document.getElementById('blackkey' + num);
         }
-        if(num<piano_key_nums*2 && tap_flg==1){
-          if(master_play==1)play_piano(num,2);
-          console.log("master posX:" + posX + " posY:" + posY + " posZ:"+posZ+" piano_num:"+num+"acc:"+acc+" num_y:"+num_y);
+
+        if(num != 2 & num != 6 && num == 9 && num == 13 && num == 16 && num == 20 && num == 21){
+          else if(num<piano_key_nums*2 && tap_flg==1){
+            if(master_play==1)play_piano(num,2);
+            console.log("master posX:" + posX + " posY:" + posY + " posZ:"+posZ+" piano_num:"+num+"acc:"+acc+" num_y:"+num_y);
           //鍵盤の色を変えるなどの処理をここに
           
-          keys.style.backgroundColor="#800080";
+            keys.style.backgroundColor="#800080";
 
-        }else if(tap_flg==2){
-          piano[i]=2;
-          if(num_y==0)keys.style.backgroundColor="#000000";
-          else if(num_y==1)keys.style.backgroundColor="#ffffff";
-          stop_piano(i);
+          }else if(tap_flg==2){
+            piano[i]=2;
+            if(num_y==0)keys.style.backgroundColor="#000000";
+            else if(num_y==1)keys.style.backgroundColor="#ffffff";
+            stop_piano(i);
+          }
         }
         //takei ここまで
 
@@ -646,7 +649,7 @@
     var ACC = 160;
     var CT = 10;
 
-    function tap_master(accZ,posZ,id){
+    function tap_m(accZ,posZ,id){
       if(accZ < (-1)*ACC && Math.abs(posZ)<border+border_range){
         tapping_count_m[id]++;
         if(tapping_count_m[id]==CT){
@@ -789,7 +792,7 @@
       var pointables = frame.pointables;
 
       for (var i = 0, hand; hand = hands[i++];) {
-    var u_hand_id = 'u' + hand.id;
+      var u_hand_id = 'u' + hand.id;
         var posX = (hand.palmPosition[0] * 3);
         var posY = (hand.palmPosition[2] * 3) - 200 + 8*em;
         var posZ = (hand.palmPosition[1] * 3) - 400;
@@ -837,20 +840,21 @@
         }else if(num_y==0){
           keys=document.getElementById('blackkey' + num);
         }
-        if(num<piano_key_nums*2 && tap_flg==1 ){
-          if(num == 2 || num == 6 || num == 9 || num == 13 || num == 16 || num == 20 || num == 21)continue;
-          play_piano(num,1);
-          console.log("posX:" + posX + " posY:" + posY + " posZ:"+posZ+" piano_num:"+num+"acc:"+acc+" num_y:"+num_y);
+
+        if(num != 2 & num != 6 && num == 9 && num == 13 && num == 16 && num == 20 && num == 21){
+          else if(num<piano_key_nums*2 && tap_flg==1){
+            if(master_play==1)play_piano(num,2);
+            console.log("user posX:" + posX + " posY:" + posY + " posZ:"+posZ+" piano_num:"+num+"acc:"+acc+" num_y:"+num_y);
           //鍵盤の色を変えるなどの処理をここに
           
-          keys.style.backgroundColor="#ff0000";
+            keys.style.backgroundColor="#800080";
 
-        }else if(tap_flg==2){
-          if(num == 2 || num == 6 || num == 9 || num == 13 || num == 16 || num == 20 || num == 21)continue;
-          piano[i]=2;
-          if(num_y==0)keys.style.backgroundColor="#000000";
-          else if(num_y==1)keys.style.backgroundColor="#ffffff";
-          stop_piano(i);
+          }else if(tap_flg==2){
+            piano[i]=2;
+            if(num_y==0)keys.style.backgroundColor="#000000";
+            else if(num_y==1)keys.style.backgroundColor="#ffffff";
+            stop_piano(i);
+          }
         }
         
         //takei added
