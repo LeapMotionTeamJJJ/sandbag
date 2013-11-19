@@ -4,7 +4,7 @@
 <html><head><meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
     <title>Leap Motion Replayer</title>
     <meta charset="utf-8">
-    <script src="./leap.min.js"></script>
+    <script src="./sample/leap.min.js"></script>
     <script src="http://d3js.org/d3.v3.js"></script>
 
     <style>
@@ -315,11 +315,12 @@
       <button id="showHands">Show Hands</button>
       <button id="hideHands">hide Hands</button>
       <button id="slow">slow(未)</button>
+      <button id="master_play" onclick="master_plays()">sound by master:off</button>
 
       <!--ここからレコード用-->
       <div id="main" style="visibility: visible;">
           <input type="button" value="record gesture" onclick="record()" id="recorder"><strong id="samplesize">0</strong> samples recorded
-      <div id="output" style="font-size: 1px"></div>
+          <div id="output" style="font-size: 1px"></div>
       </div>
       <!--ここまでレコード用-->
 
@@ -519,6 +520,40 @@
               moveFinger(fingerDiv, posX, posY, posZ, dirX, dirY, dirZ);
             }
           }
+
+ //takei added
+        acc_m = pointable.tipVelocity[1];
+
+        //numは鍵盤の番号・黒鍵の時だけ位置を少しだけずらす
+        num_y = Math.floor((posY-piano_start_Y)/piano_key_Ylength);
+        if(num_y==0)num = Math.floor((posX-piano_key_Xlength/2-piano_start_X+revision(posX))/piano_key_Xlength );
+        else if(num_y==1)num = Math.floor((posX-piano_start_X+revision(posX))/piano_key_Xlength )+piano_key_nums*num_y;
+        else num=100;
+
+
+        tap_flg = tap_m(acc,posZ,pointable.id);
+
+        var keys;
+        if(num_y==1){
+          keys=document.getElementById('whitekey' + (num-piano_key_nums))
+        }else if(num_y==0){
+          keys=document.getElementById('blackkey' + num);
+        }
+        if(num<piano_key_nums*2 && tap_flg==1){
+          if(master_play==1)play_piano(num,2);
+          console.log("master posX:" + posX + " posY:" + posY + " posZ:"+posZ+" piano_num:"+num+"acc:"+acc+" num_y:"+num_y);
+          //鍵盤の色を変えるなどの処理をここに
+          
+          keys.style.backgroundColor="#800080";
+
+        }else if(tap_flg==2){
+          piano[i]=2;
+          if(num_y==0)keys.style.backgroundColor="#000000";
+          else if(num_y==1)keys.style.backgroundColor="#ffffff";
+          stop_piano(i);
+        }
+        //takei ここまで
+
           fingerIds[m_pointable_id] = true;
         }
     
@@ -604,8 +639,36 @@
     var border_range=15; //基準の高さからの範囲
     var up_count = new Array(10);
 
+    var tapping_list_m = new Array(10);
+    var tapping_count_m = new Array(10);
+    var up_count_m = new Array(10);
+
     var ACC = 160;
     var CT = 10;
+
+    function tap_master(accZ,posZ,id){
+      if(accZ < (-1)*ACC && Math.abs(posZ)<border+border_range){
+        tapping_count_m[id]++;
+        if(tapping_count_m[id]==CT){
+          tapping_list_m[id]=1;
+          tapping_count_m[id]=0;
+          console.log("tap:"+id+","+tapping_list_m[id]);
+        }
+        return 1;
+      }else if(accZ > ACC && Math.abs(posZ)<border+border_range){
+        up_count_m[id]++;
+        if(up_count_m[id]>CT){
+          tapping_list_m[id] = 0;
+          up_count_m[id]=0;
+          console.log("up:"+id+","+tapping_list_m[id]);
+        }
+          return 2;
+        }else{
+          tapping_count_m[id] = 0;
+          up_count_m[id] = 0;
+          return 0;
+        }
+    }
 
     function tap(accZ,posZ,id){
       if(accZ < (-1)*ACC && Math.abs(posZ)<border+border_range){
@@ -640,23 +703,36 @@
     var piano_start_Y=-50; //ピアノの開始位置y 
     var piano_audio=Array(piano_key_nums);//音源の読み込み
     var em=1;
+    var master_play=1;
 
     //最初に音源をすべて読み込ませる
     function audio_load(){
-      for(var i=0;i<piano_key_nums*2;i++){
+      for(var i=0;i<piano_key_nums;i++){
+        if(i == 2 || i == 6 || i == 9 || i == 13 || i == 16 || i == 20 || i == 21)continue;
         piano_audio[i]=new Audio("./sound/"+i+".ogg");
+        piano_audio[i].addEventListener("ended",function(index){
+          return function(){stop_black(index)};
+        }(i),false);
       }
+      for(var i=piano_key_nums;i<piano_key_nums*2;i++){
+        if(i == 2 || i == 6 || i == 9 || i == 13 || i == 16 || i == 20 || i == 21)continue;
+        piano_audio[i]=new Audio("./sound/"+i+".ogg");
+        piano_audio[i].addEventListener("ended",function(index){
+          return function(){stop_white(index)};
+        }(i),false);
+      }      
     }
     //音を鳴らす。なっている途中なら止めてから鳴らす
-    function play_piano(num){
+    function play_piano(num,state){
+      var cTime = piano_audio[num].currentTime;
+      if(cTime<0.2 && cTime > 0 && state==1)return;
       if(piano[num]==1)stop_piano(num);
       piano_audio[num].play();
-      piano[num]=1;
+      piano[num]=state;
     }
     //音を止める。再生時間を最初に戻す
     function stop_piano(num){
       //console.log('ended:'+num);
-      piano[num]=2;
       piano_audio[num].pause();
       piano_audio[num].currentTime = 0;
       piano[num]=0;
@@ -675,7 +751,7 @@
     }
 
     function revision(point){
-      return point/10;
+      return point/20;
     }
 
     function init(){
@@ -688,20 +764,20 @@
       piano_key_nums = 22;
       audio_load();
 
-
-      for(var i=0;i<piano_key_nums;i++){
-        piano_audio[i].addEventListener("ended",function(index){
-          return function(){stop_black(index)};
-        }(i),false);
-      }
-      for(var i=piano_key_nums;i<piano_key_nums*2;i++){
-        piano_audio[i].addEventListener("ended",function(index){
-          return function(){stop_white(index)};
-        }(i),false);
-      }
       //takei added
     }
 
+    function master_plays() {
+      var mp = document.getElementById('master_play');
+      if(master_play==0){
+        master_play = 1;
+        mp.innerHTML = "sound by master:on";
+      }
+      else {
+        master_play = 0;
+        mp.innerHTML = "sound by master:off";
+      }
+    }
 
   /****ここからループ***/
     Leap.loop(function(frame) { 
@@ -761,14 +837,16 @@
         }else if(num_y==0){
           keys=document.getElementById('blackkey' + num);
         }
-        if(num<piano_key_nums*2 && tap_flg==1){
-          play_piano(num);
+        if(num<piano_key_nums*2 && tap_flg==1 ){
+          if(num == 2 || num == 6 || num == 9 || num == 13 || num == 16 || num == 20 || num == 21)continue;
+          play_piano(num,1);
           console.log("posX:" + posX + " posY:" + posY + " posZ:"+posZ+" piano_num:"+num+"acc:"+acc+" num_y:"+num_y);
           //鍵盤の色を変えるなどの処理をここに
           
           keys.style.backgroundColor="#ff0000";
 
         }else if(tap_flg==2){
+          if(num == 2 || num == 6 || num == 9 || num == 13 || num == 16 || num == 20 || num == 21)continue;
           piano[i]=2;
           if(num_y==0)keys.style.backgroundColor="#000000";
           else if(num_y==1)keys.style.backgroundColor="#ffffff";
