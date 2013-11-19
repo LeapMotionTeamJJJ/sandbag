@@ -4,7 +4,7 @@
 <html><head><meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
     <title>Leap Motion Replayer</title>
     <meta charset="utf-8">
-    <script src="./sample_files/leap.min.js"></script>
+    <script src="./leap.min.js"></script>
     <script src="http://d3js.org/d3.v3.js"></script>
 
     <style>
@@ -466,7 +466,7 @@
           var hand = frame.hands[handId];
       var m_hand_id = 'm'+hand.id; //IDにマスターハンドを示すmを付加
           var posX = (hand.palmPosition[0]*3);
-          var posY = (hand.palmPosition[2]*3)-200;
+          var posY = (hand.palmPosition[2]*3)+200;
           var posZ = (hand.palmPosition[1]*3)-400;
           var rotX = (hand._rotation[2]*90);
           var rotY = (hand._rotation[1]*90);
@@ -499,7 +499,7 @@
           var pointable = frame.pointables[pointableId];
       var m_pointable_id = 'm'+pointable.id //IDにマスターハンドを示すmを付加
           var posX = (pointable.tipPosition[0]*3);
-          var posY = (pointable.tipPosition[2]*3)-200;
+          var posY = (pointable.tipPosition[2]*3)-200+8*em;
           var posZ = (pointable.tipPosition[1]*3)-400;
           var dirX = -(pointable.direction[1]*90);
           var dirY = -(pointable.direction[2]*90);
@@ -600,17 +600,17 @@
 
     var tapping_list = new Array(10);
     var tapping_count = new Array(10);
-    var border=170/3; //tapの基準の高さ
+    var border=175; //tapの基準の高さ
     var border_range=15; //基準の高さからの範囲
     var up_count = new Array(10);
 
     var ACC = 160;
-    var CT = 5;
+    var CT = 10;
 
     function tap(accZ,posZ,id){
       if(accZ < (-1)*ACC && Math.abs(posZ)<border+border_range){
         tapping_count[id]++;
-        if(tapping_count[id]>CT){
+        if(tapping_count[id]==CT){
           tapping_list[id]=1;
           tapping_count[id]=0;
           console.log("tap:"+id+","+tapping_list[id]);
@@ -663,78 +663,42 @@
     }
 
     function stop_black(num){
-      return function(){
-        keys=document.getElementById('blackkey' + num);
-        keys.style.backgroundColor="#000000";
-        stop_piano(num);
-      }
+      keys=document.getElementById('blackkey' + num);
+      keys.style.backgroundColor="#000000";
+      stop_piano(num);
+      
     }
     function stop_white(num){
-      return function(){
-        keys=document.getElementById('whitekey' + (num-piano_key_nums));
-        keys.style.backgroundColor="#ffffff";
-        stop_piano(num);
-      }
+      keys=document.getElementById('whitekey' + (num-piano_key_nums));
+      keys.style.backgroundColor="#ffffff";
+      stop_piano(num);
+    }
+
+    function revision(point){
+      return point/10;
     }
 
     function init(){
       
       em = scene.clientWidth/40;
       piano_start_X = (-1)*20.25*em;
-      piano_start_Y = (-1)*5 * em;
-      piano_key_Xlength = 1.5*em*1.25;
-      piano_key_Ylength = 3*em;
+      piano_start_Y = 3 * em;
+      piano_key_Xlength = 1.875*em;
+      piano_key_Ylength = 4.5*em;
       piano_key_nums = 22;
       audio_load();
 
-          //takei added
-      //音が鳴り終わったら止める
-      piano_audio[0].addEventListener("ended",stop_black(0),false);
-      piano_audio[1].addEventListener("ended",stop_black(1),false);
-      piano_audio[2].addEventListener("ended",stop_black(2),false);
-      piano_audio[3].addEventListener("ended",stop_black(3),false);
-      piano_audio[4].addEventListener("ended",stop_black(4),false);
-      piano_audio[5].addEventListener("ended",stop_black(5),false);
-      piano_audio[6].addEventListener("ended",stop_black(6),false);
-      piano_audio[7].addEventListener("ended",stop_black(7),false);
-      piano_audio[8].addEventListener("ended",stop_black(8),false);
-      piano_audio[9].addEventListener("ended",stop_black(9),false);
-      piano_audio[10].addEventListener("ended",stop_black(10),false);
-      piano_audio[11].addEventListener("ended",stop_black(11),false);
-      piano_audio[12].addEventListener("ended",stop_black(12),false);
-      piano_audio[13].addEventListener("ended",stop_black(13),false);
-      piano_audio[14].addEventListener("ended",stop_black(14),false);
-      piano_audio[15].addEventListener("ended",stop_black(15),false);
-      piano_audio[16].addEventListener("ended",stop_black(16),false);
-      piano_audio[17].addEventListener("ended",stop_black(17),false);
-      piano_audio[18].addEventListener("ended",stop_black(18),false);
-      piano_audio[19].addEventListener("ended",stop_black(19),false);
-      piano_audio[20].addEventListener("ended",stop_black(20),false);
-      piano_audio[21].addEventListener("ended",stop_black(21),false);
 
-      piano_audio[22].addEventListener("ended",stop_white(22),false);
-      piano_audio[23].addEventListener("ended",stop_white(23),false);
-      piano_audio[24].addEventListener("ended",stop_white(24),false);
-      piano_audio[25].addEventListener("ended",stop_white(25),false);
-      piano_audio[26].addEventListener("ended",stop_white(26),false);
-      piano_audio[27].addEventListener("ended",stop_white(27),false);
-      piano_audio[28].addEventListener("ended",stop_white(28),false);
-      piano_audio[29].addEventListener("ended",stop_white(29),false);
-      piano_audio[30].addEventListener("ended",stop_white(30),false);
-      piano_audio[31].addEventListener("ended",stop_white(31),false);
-      piano_audio[32].addEventListener("ended",stop_white(32),false);
-      piano_audio[33].addEventListener("ended",stop_white(33),false);
-      piano_audio[34].addEventListener("ended",stop_white(34),false);
-      piano_audio[35].addEventListener("ended",stop_white(35),false);
-      piano_audio[36].addEventListener("ended",stop_white(36),false);
-      piano_audio[37].addEventListener("ended",stop_white(37),false);
-      piano_audio[38].addEventListener("ended",stop_white(38),false);
-      piano_audio[39].addEventListener("ended",stop_white(39),false);
-      piano_audio[40].addEventListener("ended",stop_white(40),false);
-      piano_audio[41].addEventListener("ended",stop_white(41),false);
-      piano_audio[42].addEventListener("ended",stop_white(42),false);
-      piano_audio[43].addEventListener("ended",stop_white(43),false);
-
+      for(var i=0;i<piano_key_nums;i++){
+        piano_audio[i].addEventListener("ended",function(index){
+          return function(){stop_black(index)};
+        }(i),false);
+      }
+      for(var i=piano_key_nums;i<piano_key_nums*2;i++){
+        piano_audio[i].addEventListener("ended",function(index){
+          return function(){stop_white(index)};
+        }(i),false);
+      }
       //takei added
     }
 
@@ -751,7 +715,7 @@
       for (var i = 0, hand; hand = hands[i++];) {
     var u_hand_id = 'u' + hand.id;
         var posX = (hand.palmPosition[0] * 3);
-        var posY = (hand.palmPosition[2] * 3) + 200;
+        var posY = (hand.palmPosition[2] * 3) - 200 + 8*em;
         var posZ = (hand.palmPosition[1] * 3) - 400;
         var rotX = (hand._rotation[2] * 90);
         var rotY = (hand._rotation[1] * 90);
@@ -767,7 +731,7 @@
       for (var i = 0, pointable; pointable = pointables[i++];) {
     var u_pointable_id ='u'+pointable.id;
         var posX = (pointable.tipPosition[0] * 3);
-        var posY = (pointable.tipPosition[2] * 3) + 200;
+        var posY = (pointable.tipPosition[2] * 3) - 200 + 8*em;
         var posZ = (pointable.tipPosition[1] * 3) - 400;
         var dirX = -(pointable.direction[1] * 90);
         var dirY = -(pointable.direction[2] * 90);
@@ -784,8 +748,8 @@
 
         //numは鍵盤の番号・黒鍵の時だけ位置を少しだけずらす
         num_y = Math.floor((posY-piano_start_Y)/piano_key_Ylength);
-        if(num_y==0)num = Math.floor((posX-piano_key_Xlength/2-piano_start_X)/piano_key_Xlength );
-        else if(num_y==1)num = Math.floor((posX-piano_start_X)/piano_key_Xlength )+piano_key_nums*num_y;
+        if(num_y==0)num = Math.floor((posX-piano_key_Xlength/2-piano_start_X+revision(posX))/piano_key_Xlength );
+        else if(num_y==1)num = Math.floor((posX-piano_start_X+revision(posX))/piano_key_Xlength )+piano_key_nums*num_y;
         else num=100;
 
 
