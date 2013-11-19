@@ -4,7 +4,7 @@
 <html><head><meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
     <title>Leap Motion Replayer</title>
     <meta charset="utf-8">
-    <script src="./sample/leap.min.js"></script>
+    <script src="./leap.min.js"></script>
     <script src="http://d3js.org/d3.v3.js"></script>
 
     <style>
@@ -519,43 +519,6 @@
               moveFinger(fingerDiv, posX, posY, posZ, dirX, dirY, dirZ);
             }
           }
-
- //takei added
- /*
-        acc = pointable.tipVelocity[1];
-        
-
-        //numは鍵盤の番号・黒鍵の時だけ位置を少しだけずらす
-        num_y = Math.floor((posY-piano_start_Y)/piano_key_Ylength);
-        if(num_y==0)num = Math.floor((posX-piano_key_Xlength/2-piano_start_X+revision(posX))/piano_key_Xlength );
-        else if(num_y==1)num = Math.floor((posX-piano_start_X+revision(posX))/piano_key_Xlength )+piano_key_nums*num_y;
-        else num=100;
-
-
-        tap_flg = tap(acc,posZ,pointable.id);
-
-        var keys;
-        if(num_y==1){
-          keys=document.getElementById('whitekey' + (num-piano_key_nums))
-        }else if(num_y==0){
-          keys=document.getElementById('blackkey' + num);
-        }
-        if(num<piano_key_nums*2 && tap_flg==1){
-          play_piano(num);
-          console.log("posX:" + posX + " posY:" + posY + " posZ:"+posZ+" piano_num:"+num+"acc:"+acc+" num_y:"+num_y);
-          //鍵盤の色を変えるなどの処理をここに
-          
-          keys.style.backgroundColor="#800080";
-
-        }else if(tap_flg==2){
-          piano[i]=2;
-          if(num_y==0)keys.style.backgroundColor="#000000";
-          else if(num_y==1)keys.style.backgroundColor="#ffffff";
-          stop_piano(i);
-        }
-        //takei ここまで
-*/
-
           fingerIds[m_pointable_id] = true;
         }
     
