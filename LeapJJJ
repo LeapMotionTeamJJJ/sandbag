@@ -540,8 +540,8 @@
           keys=document.getElementById('blackkey' + num);
         }
 
-        if(num != 2 & num != 6 && num == 9 && num == 13 && num == 16 && num == 20 && num == 21){
-          else if(num<piano_key_nums*2 && tap_flg==1){
+        if(num != 2 & num != 6 && num != 9 && num != 13 && num != 16 && num != 20 && num != 21){
+          if(num<piano_key_nums*2 && tap_flg==1){
             if(master_play==1)play_piano(num,2);
             console.log("master posX:" + posX + " posY:" + posY + " posZ:"+posZ+" piano_num:"+num+"acc:"+acc+" num_y:"+num_y);
           //鍵盤の色を変えるなどの処理をここに
@@ -736,6 +736,7 @@
     //音を止める。再生時間を最初に戻す
     function stop_piano(num){
       //console.log('ended:'+num);
+      if(piano[num]==0)return;
       piano_audio[num].pause();
       piano_audio[num].currentTime = 0;
       piano[num]=0;
@@ -841,9 +842,9 @@
           keys=document.getElementById('blackkey' + num);
         }
 
-        if(num != 2 & num != 6 && num == 9 && num == 13 && num == 16 && num == 20 && num == 21){
-          else if(num<piano_key_nums*2 && tap_flg==1){
-            if(master_play==1)play_piano(num,2);
+        if(num != 2 & num != 6 && num != 9 && num != 13 && num != 16 && num != 20 && num != 21){
+          if(num<piano_key_nums*2 && tap_flg==1){
+            play_piano(num,2);
             console.log("user posX:" + posX + " posY:" + posY + " posZ:"+posZ+" piano_num:"+num+"acc:"+acc+" num_y:"+num_y);
           //鍵盤の色を変えるなどの処理をここに
           
