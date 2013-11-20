@@ -737,8 +737,14 @@
     function stop_piano(num){
       //console.log('ended:'+num);
       if(piano[num]==0)return;
-      piano_audio[num].pause();
-      piano_audio[num].currentTime = 0;
+      try{
+        piano_audio[num].pause();
+        piano_audio[num].currentTime = 0;
+      }catch( e ){
+        console.log(e);
+        //alert( e );  // バグの内容をダイアログで表示する
+      }
+
       piano[num]=0;
     }
 
