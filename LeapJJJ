@@ -552,7 +552,7 @@
             piano[i]=2;
             if(num_y==0)keys.style.backgroundColor="#000000";
             else if(num_y==1)keys.style.backgroundColor="#ffffff";
-            stop_piano(i);
+            //stop_piano(i);
           }
         }
         //takei ここまで
