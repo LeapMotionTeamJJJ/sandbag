@@ -540,7 +540,7 @@
           keys=document.getElementById('blackkey' + num);
         }
 
-        if(num != 2 & num != 6 && num != 9 && num != 13 && num != 16 && num != 20 && num != 21){
+        if(num != 2 & num != 6 && num != 9 && num != 13 && num != 16 && num != 20 && num != 21 && num < piano_key_nums*2){
           if(num<piano_key_nums*2 && tap_flg==1){
             if(master_play==1)play_piano(num,2);
             console.log("master posX:" + posX + " posY:" + posY + " posZ:"+posZ+" piano_num:"+num+"acc:"+acc+" num_y:"+num_y);
@@ -639,7 +639,7 @@
     var tapping_list = new Array(10);
     var tapping_count = new Array(10);
     var border=175; //tapの基準の高さ
-    var border_range=15; //基準の高さからの範囲
+    var border_range=7; //基準の高さからの範囲
     var up_count = new Array(10);
 
     var tapping_list_m = new Array(10);
@@ -647,7 +647,7 @@
     var up_count_m = new Array(10);
 
     var ACC = 160;
-    var CT = 10;
+    var CT = 3;
 
     function tap_m(accZ,posZ,id){
       if(accZ < (-1)*ACC && Math.abs(posZ)<border+border_range){
@@ -655,7 +655,7 @@
         if(tapping_count_m[id]==CT){
           tapping_list_m[id]=1;
           tapping_count_m[id]=0;
-          console.log("tap:"+id+","+tapping_list_m[id]);
+          //console.log("tap:"+id+","+tapping_list_m[id]);
         }
         return 1;
       }else if(accZ > ACC && Math.abs(posZ)<border+border_range){
@@ -663,7 +663,7 @@
         if(up_count_m[id]>CT){
           tapping_list_m[id] = 0;
           up_count_m[id]=0;
-          console.log("up:"+id+","+tapping_list_m[id]);
+          //console.log("up:"+id+","+tapping_list_m[id]);
         }
           return 2;
         }else{
@@ -679,7 +679,7 @@
         if(tapping_count[id]==CT){
           tapping_list[id]=1;
           tapping_count[id]=0;
-          console.log("tap:"+id+","+tapping_list[id]);
+          //console.log("tap:"+id+","+tapping_list[id]);
         }
         return 1;
       }else if(accZ > ACC && Math.abs(posZ)<border+border_range){
@@ -687,7 +687,7 @@
         if(up_count[id]>CT){
           tapping_list[id] = 0;
           up_count[id]=0;
-          console.log("up:"+id+","+tapping_list[id]);
+          //console.log("up:"+id+","+tapping_list[id]);
         }
           return 2;
         }else{
@@ -728,7 +728,7 @@
     //音を鳴らす。なっている途中なら止めてから鳴らす
     function play_piano(num,state){
       var cTime = piano_audio[num].currentTime;
-      if(cTime<0.2 && cTime > 0 && state==1)return;
+      if(cTime<0.15 && cTime > 0 && state==1)return;
       if(piano[num]==1)stop_piano(num);
       piano_audio[num].play();
       piano[num]=state;
@@ -848,19 +848,19 @@
           keys=document.getElementById('blackkey' + num);
         }
 
-        if(num != 2 & num != 6 && num != 9 && num != 13 && num != 16 && num != 20 && num != 21){
+        if(num != 2 & num != 6 && num != 9 && num != 13 && num != 16 && num != 20 && num != 21 && num < piano_key_nums*2){
           if(num<piano_key_nums*2 && tap_flg==1){
-            play_piano(num,2);
-            console.log("user posX:" + posX + " posY:" + posY + " posZ:"+posZ+" piano_num:"+num+"acc:"+acc+" num_y:"+num_y);
+            play_piano(num,1);
+            //console.log("user posX:" + posX + " posY:" + posY + " posZ:"+posZ+" piano_num:"+num+"acc:"+acc+" num_y:"+num_y);
           //鍵盤の色を変えるなどの処理をここに
           
             keys.style.backgroundColor="#800080";
 
           }else if(tap_flg==2){
-            piano[i]=2;
+            piano[num]=2;
             if(num_y==0)keys.style.backgroundColor="#000000";
             else if(num_y==1)keys.style.backgroundColor="#ffffff";
-            stop_piano(i);
+            stop_piano(num);
           }
         }
         
