@@ -830,13 +830,17 @@
         //takei added
         acc = pointable.tipVelocity[1];
         
+        //指位置の調整
+        var f_margine = 3*em;
+        var posX_re = f_margine/Math.sqrt(1+Math.tan(dirX)*Math.tan(dirX)+Math.tan(dirZ)*Math.tan(dirZ));
+        var posY_re = posX_re * Math.tan(dirY);
+        var posZ_re = posZ_re * Math.tan(dirZ);
 
         //numは鍵盤の番号・黒鍵の時だけ位置を少しだけずらす
-        num_y = Math.floor((posY-piano_start_Y)/piano_key_Ylength);
-        if(num_y==0)num = Math.floor((posX-piano_key_Xlength/2-piano_start_X+revision(posX))/piano_key_Xlength );
-        else if(num_y==1)num = Math.floor((posX-piano_start_X+revision(posX))/piano_key_Xlength )+piano_key_nums*num_y;
+        num_y = Math.floor((posY-posY_re-piano_start_Y)/piano_key_Ylength);
+        if(num_y==0)num = Math.floor((posX+posX_re-piano_key_Xlength/2-piano_start_X+revision(posX))/piano_key_Xlength );
+        else if(num_y==1)num = Math.floor((posX+posX_re-piano_start_X+revision(posX))/piano_key_Xlength )+piano_key_nums*num_y;
         else num=100;
-
 
         tap_flg = tap(acc,posZ,pointable.id);
 
