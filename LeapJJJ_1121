@@ -84,6 +84,16 @@
         font-size: 100px;
       }
 
+      /*inoue add マスターの手を透明化*/
+      .m_finger {
+        opacity: 0.3;
+      }
+
+      .m_sphere {
+        opacity: 0.3;
+      }
+
+
       .show-hands .sphere {
         display: block;
       }
@@ -309,9 +319,9 @@
       /*****ここまでレコード用CSS****/
 
       #gakuhu{
-        width:40%;
-        height:20%;
-        -webkit-transform: translate3d(10em, -2em, 1em)
+        width:700px;
+        height:400px;
+        -webkit-transform: translate3d(18em, -2em, 5em)
       }
     </style>
   <style>[touch-action="none"]{ -ms-touch-action: none; touch-action: none; }[touch-action="pan-x"]{ -ms-touch-action: pan-x; touch-action: pan-x; }[touch-action="pan-y"]{ -ms-touch-action: pan-y; touch-action: pan-y; }[touch-action="scroll"],[touch-action="pan-x pan-y"],[touch-action="pan-y pan-x"]{ -ms-touch-action: pan-x pan-y; touch-action: pan-x pan-y; }</style></head>
@@ -322,9 +332,14 @@
   
       <button id="showHands">Show Hands</button>
       <button id="hideHands">hide Hands</button>
-      <button id="slow">slow(未)</button>
+      
+      <form name="master_setting">
+        <input type="text" name="speed_input" value="1000" onkeyup="change_speed()">
+      </form>
       <button id="master_play" onclick="master_plays()">sound by master:off</button>
+      <button id="master_motion_play" onclick="master_motion_plays()">motion by master:off</button>
 
+      
       <!--ここからレコード用-->
       <div id="main" style="visibility: visible;">
           <input type="button" value="record gesture" onclick="record()" id="recorder"><strong id="samplesize">0</strong> samples recorded
@@ -333,7 +348,7 @@
       <!--ここまでレコード用-->
 
       <div>
-        <img id = "gakuhu"src ="/member/kenji/leapmotion/music/kirakiraboshi-double-1.jpeg" >
+        <img id = "gakuhu"src ="/member/kenji/leapmotion/music/kirakiraboshi-double-1.jpeg" onclick="gakuhu_change()" >
       </div>
 
       <div id="scene">
@@ -424,16 +439,39 @@
 
 
     <script>
-    var gakuhu = ["kirakiraboshi-double-1.jpeg","Menuett-double-1.png","erize-double-1.gif"];
+
+    var gakuhu = ["kirakiraboshi-double-1.jpeg","Menuett-double-1.png","erize-double-1.gif","supermariostar_double.png","supermariodeath_double.png","supermariobros_double.png","kaerunouta_single.jpg","chocolatedisco_double.png"];
+    var gakuhu_number=0;
+    function gakuhu_change(){
+      gakuhu_number=gakuhu_number%gakuhu.length;
+      document.getElementById("gakuhu").src="music/"+gakuhu[gakuhu_number];
+      gakuhu_number+=1;
+    }
+
+
 
   /**************ここから マスターハンド用********/
-      var master_leap = new Leap.Controller({}); //for master_leap
-    var duration,step;
+    var master_leap = new Leap.Controller({}); //for master_leap
+    var duration,step;//再生時間　再生間隔
+    var m_speed=1000; //再生速度の調整
   
+      function change_speed(){
+        m_speed = document.master_setting.speed_input.value;
+        console.log(m_speed);
+      }
+
+      function master_motion_plays() {
+        var mp = document.getElementById('master_motion_play');
+          mp.innerHTML = "motion by master:playing";
+          d3.json("http://uectf.jp/member/kenji/leapmotion/master/kumagai-1.dat", function(error, data) {
+        simulateGesture(data);
+      });
+         }
+
       function simulateGesture(data) {
         var last = data.length-1;
         var i = 0;
-         duration = (data[last].timestamp - data[0].timestamp)/1000; //モーション移動速度の変更はここ
+         duration = (data[last].timestamp - data[0].timestamp)/m_speed; //モーション移動速度の変更はここ
          step = duration/data.length;
      //print
      console.log("duration:"+duration);
@@ -475,9 +513,9 @@
 
         for (var handId = 0, handCount = handsLength; handId != handCount; handId++) {
           var hand = frame.hands[handId];
-      var m_hand_id = 'm'+hand.id; //IDにマスターハンドを示すmを付加
+          var m_hand_id = 'm'+hand.id; //IDにマスターハンドを示すmを付加
           var posX = (hand.palmPosition[0]*3);
-          var posY = (hand.palmPosition[2]*3)-200+8*em;
+          var posY = (hand.palmPosition[2]*3)-200+15*em;
           var posZ = (hand.palmPosition[1]*3)-400;
           var rotX = (hand._rotation[2]*90);
           var rotY = (hand._rotation[1]*90);
@@ -486,7 +524,8 @@
           if (!sphere) {
             var sphereDiv = document.getElementById("m_sphere").cloneNode(true);
                 sphereDiv.setAttribute('id',m_hand_id);
-                sphereDiv.style.backgroundColor='#'+Math.floor(Math.random()*16777215).toString(16);
+                //sphereDiv.style.backgroundColor='#'+Math.floor(Math.random()*16777215).toString(16);
+                sphereDiv.style.backgroundColor="gray";
                 document.getElementById('scene').appendChild(sphereDiv);
                 spheres[m_hand_id] = m_hand_id;
           } else {
@@ -508,9 +547,9 @@
 
         for (var pointableId = 0, pointableCount = frame.pointables.length; pointableId != pointableCount; pointableId++) {
           var pointable = frame.pointables[pointableId];
-      var m_pointable_id = 'm'+pointable.id //IDにマスターハンドを示すmを付加
+          var m_pointable_id = 'm'+pointable.id //IDにマスターハンドを示すmを付加
           var posX = (pointable.tipPosition[0]*3);
-          var posY = (pointable.tipPosition[2]*3)-200+8*em;
+          var posY = (pointable.tipPosition[2]*3)-200+15*em;
           var posZ = (pointable.tipPosition[1]*3)-400;
           var dirX = -(pointable.direction[1]*90);
           var dirY = -(pointable.direction[2]*90);
@@ -520,7 +559,13 @@
             var fingerDiv = document.getElementById("m_finger").cloneNode(true);
                 fingerDiv.setAttribute('id',m_pointable_id);
                 //fingerDiv.style.backgroundColor='#'+Math.floor(Math.random()*16777215).toString(16);
-                fingerDiv.style.backgroundColor='#808080';
+                
+                //inoue add 
+                faces = fingerDiv.children;
+                for(i=0;i<faces.length;i++){
+                  faces[i].style.backgroundColor = "gray";
+                }
+                //ここまで　inoue adda\
                 document.getElementById('scene').appendChild(fingerDiv);
                 fingers[m_pointable_id] = m_pointable_id; //現在のfingerオブジェクトのidを連想配列で格納 
                         //ex:Object {14: 14, 33: 33, 34: 34, 59: 59, 76: 76}
@@ -541,15 +586,6 @@
         else num=100;
 
 
-        tap_flg = tap_m(acc,posZ,pointable.id);
-
-        var keys;
-        if(num_y==1){
-          keys=document.getElementById('whitekey' + (num-piano_key_nums))
-        }else if(num_y==0){
-          keys=document.getElementById('blackkey' + num);
-        }
-
         if(num != 2 & num != 6 && num != 9 && num != 13 && num !=14 && num < piano_key_nums*2){
           if(num<piano_key_nums*2 && tap_flg==1){
             if(master_play==1)play_piano(num,2);
@@ -559,10 +595,10 @@
             keys.style.backgroundColor="#800080";
 
           }else if(tap_flg==2){
-            piano[i]=2;
+            piano[num]=2;
             if(num_y==0)keys.style.backgroundColor="#000000";
             else if(num_y==1)keys.style.backgroundColor="#ffffff";
-            //stop_piano(i);
+            //stop_piano(num);
           }
         }
         //takei ここまで
@@ -575,14 +611,20 @@
             var fingerDiv =  document.getElementById(fingers[fingerId]);
             fingerDiv.parentNode.removeChild(fingerDiv);
             delete fingers[fingerId];
+        tap_flg = tap_m(acc,posZ,pointable.id);
+
+        var keys;
+        if(num_y==1){
+          keys=document.getElementById('whitekey' + (num-piano_key_nums))
+        }else if(num_y==0){
+          keys=document.getElementById('blackkey' + num);
+        }
+
           }
         }
       });
 
 
-      d3.json("http://uectf.jp/member/kenji/leapmotion/data_json2.js", function(error, data) {
-        simulateGesture(data);
-      });
       /**************ここまで マスターハンド用********/
 
     
@@ -595,7 +637,7 @@
       style.transform =
       style.webkitTransform = 'translate3d(' + posX + 'px, ' + posY + 'px, ' + posZ + 'px) ' +
                               'rotate3d(1, 0, 0, ' + rotX + 'deg) rotate3d(0, 0, 1, ' + rotZ + 'deg)';
-    }
+    }\
 
     function getNode(id, templateNode) {
       var node  = pool[id];
@@ -609,9 +651,7 @@
 
         //井上追加　11/21
         faces = node.children;
-        //console.log("faces_num:"+faces.length);
         for(i=0;i<faces.length;i++){
-          //console.log(faces[i]);
           faces[i].style.backgroundColor = userColor();
         }
         scene.appendChild(node);
@@ -655,8 +695,9 @@
 
     var tapping_list = new Array(10);
     var tapping_count = new Array(10);
-    var border=170; //tapの基準の高さ
-    var border_range=7; //基準の高さからの範囲
+    var border=160; //tapの基準の高さ
+//    var border_range=7; //基準の高さからの範囲
+    var border_range=15; //基準の高さからの範囲
     var up_count = new Array(10);
 
     var tapping_list_m = new Array(10);
@@ -817,7 +858,7 @@
       for (var i = 0, hand; hand = hands[i++];) {
       var u_hand_id = 'u' + hand.id;
         var posX = (hand.palmPosition[0] * 3);
-        var posY = (hand.palmPosition[2] * 3) - 200 + 8*em;
+        var posY = (hand.palmPosition[2] * 3) - 200 + 15*em;
         var posZ = (hand.palmPosition[1] * 3) - 400;
         var rotX = (hand._rotation[2] * 90);
         var rotY = (hand._rotation[1] * 90);
@@ -833,7 +874,7 @@
       for (var i = 0, pointable; pointable = pointables[i++];) {
     var u_pointable_id ='u'+pointable.id;
         var posX = (pointable.tipPosition[0] * 3);
-        var posY = (pointable.tipPosition[2] * 3) - 200 + 8*em;
+        var posY = (pointable.tipPosition[2] * 3) - 200 + 15*em;
         var posZ = (pointable.tipPosition[1] * 3) - 400;
         var dirX = -(pointable.direction[1] * 90);
         var dirY = -(pointable.direction[2] * 90);
